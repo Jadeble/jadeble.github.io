@@ -89,23 +89,31 @@ hugo server -D --disableFastRender
 
 ```bash
 function deploy
-    # 1. 先推送源码（在项目根目录）
+    # 1. 推送源码
     cd /home/jade/blog/myblog
     git add .
-    git commit -m "更新源文件" # 如果没有修改，这步会报错，可以忽略
+    git commit -m "更新源文件" # 若没有修改会报错，可忽略
     git push origin main
 
-    # 2. 再编译和推送网页（进入 public 目录）
+    # 2. 生成网站
     hugo
+
+    # 3. 部署到 gh-pages
     cd public
-    git init
+    if not test -d .git
+        git init
+    end
+    # 下面一行：如果 origin 不存在就添加，存在则更新地址（不报错）
+    if test -z (git remote get-url origin 2>/dev/null)
+        git remote add origin git@github.com:Jadeble/jadeble.github.io.git
+    else
+        git remote set-url origin git@github.com:Jadeble/jadeble.github.io.git
+    end
     git add .
     git commit -m "Deploy website"
     git branch -m gh-pages
-    git remote add origin git@github.com:Jadeble/jadeble.github.io.git
     git push -f -u origin gh-pages
     cd ..
-
     echo "✅ 网站源码和网页都已更新！"
 end
 ```
