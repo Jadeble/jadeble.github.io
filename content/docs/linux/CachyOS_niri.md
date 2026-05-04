@@ -1,5 +1,6 @@
 ---
 title: CachyOS与niri配置
+weight: 1
 ---
 
 ## 字体替换

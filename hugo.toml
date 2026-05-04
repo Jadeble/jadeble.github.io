@@ -1,5 +1,5 @@
 baseURL = 'https://jadeble.github.io/'
-languageCode = 'zh-cn'
+locale = 'zh-cn'
 title = '我的知识库'
 theme = 'book'
 

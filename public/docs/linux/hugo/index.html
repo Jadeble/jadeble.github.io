@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="安装&amp;初始化Hugo# sudo pacman -S hugo在自己喜欢的目录，比如blog，起一个自己喜欢的名字，比如myblog执行如下命令
+hugo new site myblog cd myblog git init以book主题为例
+git submodule add https://github.com/alex-shpak/hugo-book.git themes/book之后更新主题只需要git submodule update
+配置站点文件# 我用micro打开
+micro hugo.toml输入如下内容
+baseURL = &#39;https://jadeble.github.io/&#39; languageCode = &#39;zh-cn&#39; title = &#39;我的知识库&#39; theme = &#39;book&#39; [params] BookSection = &#39;docs&#39; BookSearch = true BookComments = false # 左侧菜单（可按需增减） [[menu.main]] name = &#39;文档&#39; url = &#39;/docs/&#39; weight = 1 [[menu.main]] name = &#39;标签&#39; url = &#39;/tags/&#39; weight = 2在content文件夹下创建分类文件夹，例如
+mkdir -p content/docs/linux content/docs/git content/docs/web每一个文件夹中需要有一个_index.md，开头格式如下
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2e3440">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/linux/hugo/">
+  <meta property="og:site_name" content="我的知识库">
+  <meta property="og:title" content="hugo搭建简明指南">
+  <meta property="og:description" content="安装&amp;初始化Hugo# sudo pacman -S hugo在自己喜欢的目录，比如blog，起一个自己喜欢的名字，比如myblog执行如下命令
+hugo new site myblog cd myblog git init以book主题为例
+git submodule add https://github.com/alex-shpak/hugo-book.git themes/book之后更新主题只需要git submodule update
+配置站点文件# 我用micro打开
+micro hugo.toml输入如下内容
+baseURL = &#39;https://jadeble.github.io/&#39; languageCode = &#39;zh-cn&#39; title = &#39;我的知识库&#39; theme = &#39;book&#39; [params] BookSection = &#39;docs&#39; BookSearch = true BookComments = false # 左侧菜单（可按需增减） [[menu.main]] name = &#39;文档&#39; url = &#39;/docs/&#39; weight = 1 [[menu.main]] name = &#39;标签&#39; url = &#39;/tags/&#39; weight = 2在content文件夹下创建分类文件夹，例如
+mkdir -p content/docs/linux content/docs/git content/docs/web每一个文件夹中需要有一个_index.md，开头格式如下">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+
+
+  <meta itemprop="name" content="hugo搭建简明指南">
+  <meta itemprop="description" content="安装&amp;初始化Hugo# sudo pacman -S hugo在自己喜欢的目录，比如blog，起一个自己喜欢的名字，比如myblog执行如下命令
+hugo new site myblog cd myblog git init以book主题为例
+git submodule add https://github.com/alex-shpak/hugo-book.git themes/book之后更新主题只需要git submodule update
+配置站点文件# 我用micro打开
+micro hugo.toml输入如下内容
+baseURL = &#39;https://jadeble.github.io/&#39; languageCode = &#39;zh-cn&#39; title = &#39;我的知识库&#39; theme = &#39;book&#39; [params] BookSection = &#39;docs&#39; BookSearch = true BookComments = false # 左侧菜单（可按需增减） [[menu.main]] name = &#39;文档&#39; url = &#39;/docs/&#39; weight = 1 [[menu.main]] name = &#39;标签&#39; url = &#39;/tags/&#39; weight = 2在content文件夹下创建分类文件夹，例如
+mkdir -p content/docs/linux content/docs/git content/docs/web每一个文件夹中需要有一个_index.md，开头格式如下">
+  <meta itemprop="wordCount" content="146">
+
+<title>hugo搭建简明指南 | 我的知识库</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/docs/linux/hugo/">
+<link rel="stylesheet" href="/book.min.4d6d5ad3b0ae85d2a15b20ab217863f70db543e46314629e239ced759e674898.css" integrity="sha256-TW1a07CuhdKhWyCrIXhj9w21Q&#43;RjFGKeI5ztdZ5nSJg=" crossorigin="anonymous">
+
+
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.c635ce3b3b2b522ee55cd7764db78cce97efecb124b187843794d39a962f399f.js" integrity="sha256-xjXOOzsrUi7lXNd2TbeMzpfv7LEksYeEN5TTmpYvOZ8=" crossorigin="anonymous"></script>
+
+
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-docs">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>我的知识库</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input id="book-search-input" type="text" 
+    placeholder="Search"
+    aria-label="Search"
+    maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/" class="">
+      xv6</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-0/" class="">
+      CHAPTER 0</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/lab-1-utilities/" class="">
+      Lab 1 Utilities</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-1/" class="">
+      CHAPTER 1</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/linux/" class="">
+      linux</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/linux/cachyos_niri/" class="">
+      CachyOS与niri配置</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/linux/hugo/" class="active">
+      hugo搭建简明指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>hugo搭建简明指南</h3>
+
+  <label for="toc-control">
+    
+    <img src="/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装初始化hugo">安装&amp;初始化Hugo</a></li>
+    <li><a href="#配置站点文件">配置站点文件</a></li>
+    <li><a href="#推送到github">推送到GitHub</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h2 id="安装初始化hugo">安装&amp;初始化Hugo<a class="anchor" href="#%e5%ae%89%e8%a3%85%e5%88%9d%e5%a7%8b%e5%8c%96hugo">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo pacman -S hugo</span></span></code></pre></div><p>在自己喜欢的目录，比如<code>blog</code>，起一个自己喜欢的名字，比如<code>myblog</code>执行如下命令</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>hugo new site myblog
+</span></span><span style="display:flex;"><span>cd myblog
+</span></span><span style="display:flex;"><span>git init</span></span></code></pre></div><p>以book主题为例</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git submodule add https://github.com/alex-shpak/hugo-book.git themes/book</span></span></code></pre></div><p>之后更新主题只需要<code>git submodule update</code></p>
+<h2 id="配置站点文件">配置站点文件<a class="anchor" href="#%e9%85%8d%e7%bd%ae%e7%ab%99%e7%82%b9%e6%96%87%e4%bb%b6">#</a></h2>
+<p>我用micro打开</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>micro hugo.toml</span></span></code></pre></div><p>输入如下内容</p>
+<pre tabindex="0"><code class="language-to" data-lang="to">baseURL = &#39;https://jadeble.github.io/&#39;
+languageCode = &#39;zh-cn&#39;
+title = &#39;我的知识库&#39;
+theme = &#39;book&#39;
+
+[params]
+  BookSection = &#39;docs&#39;
+  BookSearch = true
+  BookComments = false
+
+# 左侧菜单（可按需增减）
+[[menu.main]]
+  name = &#39;文档&#39;
+  url = &#39;/docs/&#39;
+  weight = 1
+[[menu.main]]
+  name = &#39;标签&#39;
+  url = &#39;/tags/&#39;
+  weight = 2</code></pre><p>在content文件夹下创建分类文件夹，例如</p>
+<pre tabindex="0"><code class="language-ba" data-lang="ba">mkdir -p content/docs/linux content/docs/git content/docs/web</code></pre><p>每一个文件夹中需要有一个<code>_index.md</code>，开头格式如下</p>
+<pre tabindex="0"><code class="language-mark" data-lang="mark">---
+title: linux
+weight: 2
+---</code></pre><p><code>weight</code>决定了该目录在第几个，文章的开头也可以如此</p>
+<p>执行如下内容开启预览</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>hugo server -D --disableFastRender</span></span></code></pre></div><h2 id="推送到github">推送到GitHub<a class="anchor" href="#%e6%8e%a8%e9%80%81%e5%88%b0github">#</a></h2>
+<p>这里采用源码在<code>main</code>分支，编译得到的文件在<code>gh-pages</code>分支</p>
+<p>直接写了一个<code>fish</code>脚本，应该能看懂流程</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> deploy
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. 先推送源码（在项目根目录）</span>
+</span></span><span style="display:flex;"><span>    cd /home/jade/blog/myblog
+</span></span><span style="display:flex;"><span>    git add .
+</span></span><span style="display:flex;"><span>    git commit -m <span style="color:#e6db74">&#34;更新源文件&#34;</span> <span style="color:#75715e"># 如果没有修改，这步会报错，可以忽略</span>
+</span></span><span style="display:flex;"><span>    git push origin main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 再编译和推送网页（进入 public 目录）</span>
+</span></span><span style="display:flex;"><span>    hugo
+</span></span><span style="display:flex;"><span>    cd public
+</span></span><span style="display:flex;"><span>    git init
+</span></span><span style="display:flex;"><span>    git add .
+</span></span><span style="display:flex;"><span>    git commit -m <span style="color:#e6db74">&#34;Deploy website&#34;</span>
+</span></span><span style="display:flex;"><span>    git branch -m gh-pages
+</span></span><span style="display:flex;"><span>    git remote add origin git@github.com:Jadeble/jadeble.github.io.git
+</span></span><span style="display:flex;"><span>    git push -f -u origin gh-pages
+</span></span><span style="display:flex;"><span>    cd ..
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;✅ 网站源码和网页都已更新！&#34;</span>
+</span></span><span style="display:flex;"><span>end</span></span></code></pre></div><div style="text-align: center; font-size: 3em; font-weight: bold; margin: 2em 0;">
+大功告成
+</div>
+
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/docs/linux/cachyos_niri/" class="flex align-center">
+        <img src="/icons/backward.svg" class="book-icon" alt="Backward" />
+        <span>CachyOS与niri配置</span>
+      </a>
+    
+    </span>
+    <span>
+    
+    </span>
+  </div>
+  
+
+
+ 
+        
+  
+ 
+        
+        
+  
+ 
+        
+  
+  
+    <script>(function(){document.querySelectorAll("pre:has(code)").forEach(e=>{e.addEventListener("click",e.focus),e.addEventListener("copy",function(t){if(t.preventDefault(),navigator.clipboard){const t=window.getSelection().toString()||e.textContent;navigator.clipboard.writeText(t)}})})})()</script>
+  
+
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+  
+  <aside class="book-toc">
+    <div class="book-toc-content">
+      
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装初始化hugo">安装&amp;初始化Hugo</a></li>
+    <li><a href="#配置站点文件">配置站点文件</a></li>
+    <li><a href="#推送到github">推送到GitHub</a></li>
+  </ul>
+</nav>
+
+
+
+    </div>
+  </aside>
+  
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
