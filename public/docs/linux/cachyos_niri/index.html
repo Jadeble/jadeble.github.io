@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="字体替换# 因为默认英文字体好像不是等宽，导致终端巨巨巨丑，所以当务之急先配个英文字体再说
+安装JetBrains Moni
+sudo pacman -S ttf-jetbrains-mono fc-list | grep &#34;JetBrains Mono&#34; #这里是确认是否安装成功 mkdir -p ~/.config/fontconfig/ micro ~/.config/fontconfig/fonts.conf我这里用的终端编辑器是micro，比较符合现代使用习惯
+然后在该文件夹中写入配置
+&lt;?xml version=&#34;1.0&#34;?&gt; &lt;!DOCTYPE fontconfig SYSTEM &#34;fonts.dtd&#34;&gt; &lt;fontconfig&gt; &lt;match target=&#34;pattern&#34;&gt; &lt;test name=&#34;family&#34; qual=&#34;any&#34;&gt; &lt;string&gt;monospace&lt;/string&gt; &lt;/test&gt; &lt;!-- 第一位：JetBrains Mono --&gt; &lt;edit name=&#34;family&#34; mode=&#34;prepend&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;JetBrains Mono&lt;/string&gt; &lt;/edit&gt; &lt;!-- 最后一位：文楷等宽 Nerd Font（作为中文回退） --&gt; &lt;edit name=&#34;family&#34; mode=&#34;append&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;LXGWWenKaiMono Nerd Font&lt;/string&gt; &lt;/edit&gt; &lt;/match&gt; &lt;/fontconfig&gt;可以先暂时把霞鹜文楷的部分去掉，也可以先执行下面这个安装一下霞鹜文楷
+paru -S ttf-lxgw-wenkai ttf-lxgw-wenkai-mono-nerd增加archlinuxcn源# micro /etc/pacman.conf在文件的末尾增加
+[archlinuxcn] Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch也可以增加自己喜欢的源
+安装clash# sudo paru -S clash-verge-rev-bin关机前记得关clash，否则有概率在开机后网络无法使用
+配置中文输入法# sudo pacman -S fcitx5-im fcitx5-rime rime-ice-pinyin-git mkdir -p ~/.local/share/fcitx5/rime micro ~/.local/share/fcitx5/rime/default.custom.yaml在用户配置文件中写入
+patch: __include: rime_ice_suggestion:/在niri配置文件的环境变量部分写入
+environment{ LC_MESSAGES &#34;zh_CN.UTF-8&#34; XMODIFIERS &#34;@im=fcitx&#34; }然后后台启动fictx5
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2e3440">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/linux/cachyos_niri/">
+  <meta property="og:site_name" content="我的知识库">
+  <meta property="og:title" content="CachyOS与niri配置">
+  <meta property="og:description" content="字体替换# 因为默认英文字体好像不是等宽，导致终端巨巨巨丑，所以当务之急先配个英文字体再说
+安装JetBrains Moni
+sudo pacman -S ttf-jetbrains-mono fc-list | grep &#34;JetBrains Mono&#34; #这里是确认是否安装成功 mkdir -p ~/.config/fontconfig/ micro ~/.config/fontconfig/fonts.conf我这里用的终端编辑器是micro，比较符合现代使用习惯
+然后在该文件夹中写入配置
+&lt;?xml version=&#34;1.0&#34;?&gt; &lt;!DOCTYPE fontconfig SYSTEM &#34;fonts.dtd&#34;&gt; &lt;fontconfig&gt; &lt;match target=&#34;pattern&#34;&gt; &lt;test name=&#34;family&#34; qual=&#34;any&#34;&gt; &lt;string&gt;monospace&lt;/string&gt; &lt;/test&gt; &lt;!-- 第一位：JetBrains Mono --&gt; &lt;edit name=&#34;family&#34; mode=&#34;prepend&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;JetBrains Mono&lt;/string&gt; &lt;/edit&gt; &lt;!-- 最后一位：文楷等宽 Nerd Font（作为中文回退） --&gt; &lt;edit name=&#34;family&#34; mode=&#34;append&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;LXGWWenKaiMono Nerd Font&lt;/string&gt; &lt;/edit&gt; &lt;/match&gt; &lt;/fontconfig&gt;可以先暂时把霞鹜文楷的部分去掉，也可以先执行下面这个安装一下霞鹜文楷
+paru -S ttf-lxgw-wenkai ttf-lxgw-wenkai-mono-nerd增加archlinuxcn源# micro /etc/pacman.conf在文件的末尾增加
+[archlinuxcn] Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch也可以增加自己喜欢的源
+安装clash# sudo paru -S clash-verge-rev-bin关机前记得关clash，否则有概率在开机后网络无法使用
+配置中文输入法# sudo pacman -S fcitx5-im fcitx5-rime rime-ice-pinyin-git mkdir -p ~/.local/share/fcitx5/rime micro ~/.local/share/fcitx5/rime/default.custom.yaml在用户配置文件中写入
+patch: __include: rime_ice_suggestion:/在niri配置文件的环境变量部分写入
+environment{ LC_MESSAGES &#34;zh_CN.UTF-8&#34; XMODIFIERS &#34;@im=fcitx&#34; }然后后台启动fictx5">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+
+
+  <meta itemprop="name" content="CachyOS与niri配置">
+  <meta itemprop="description" content="字体替换# 因为默认英文字体好像不是等宽，导致终端巨巨巨丑，所以当务之急先配个英文字体再说
+安装JetBrains Moni
+sudo pacman -S ttf-jetbrains-mono fc-list | grep &#34;JetBrains Mono&#34; #这里是确认是否安装成功 mkdir -p ~/.config/fontconfig/ micro ~/.config/fontconfig/fonts.conf我这里用的终端编辑器是micro，比较符合现代使用习惯
+然后在该文件夹中写入配置
+&lt;?xml version=&#34;1.0&#34;?&gt; &lt;!DOCTYPE fontconfig SYSTEM &#34;fonts.dtd&#34;&gt; &lt;fontconfig&gt; &lt;match target=&#34;pattern&#34;&gt; &lt;test name=&#34;family&#34; qual=&#34;any&#34;&gt; &lt;string&gt;monospace&lt;/string&gt; &lt;/test&gt; &lt;!-- 第一位：JetBrains Mono --&gt; &lt;edit name=&#34;family&#34; mode=&#34;prepend&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;JetBrains Mono&lt;/string&gt; &lt;/edit&gt; &lt;!-- 最后一位：文楷等宽 Nerd Font（作为中文回退） --&gt; &lt;edit name=&#34;family&#34; mode=&#34;append&#34; binding=&#34;strong&#34;&gt; &lt;string&gt;LXGWWenKaiMono Nerd Font&lt;/string&gt; &lt;/edit&gt; &lt;/match&gt; &lt;/fontconfig&gt;可以先暂时把霞鹜文楷的部分去掉，也可以先执行下面这个安装一下霞鹜文楷
+paru -S ttf-lxgw-wenkai ttf-lxgw-wenkai-mono-nerd增加archlinuxcn源# micro /etc/pacman.conf在文件的末尾增加
+[archlinuxcn] Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch也可以增加自己喜欢的源
+安装clash# sudo paru -S clash-verge-rev-bin关机前记得关clash，否则有概率在开机后网络无法使用
+配置中文输入法# sudo pacman -S fcitx5-im fcitx5-rime rime-ice-pinyin-git mkdir -p ~/.local/share/fcitx5/rime micro ~/.local/share/fcitx5/rime/default.custom.yaml在用户配置文件中写入
+patch: __include: rime_ice_suggestion:/在niri配置文件的环境变量部分写入
+environment{ LC_MESSAGES &#34;zh_CN.UTF-8&#34; XMODIFIERS &#34;@im=fcitx&#34; }然后后台启动fictx5">
+  <meta itemprop="wordCount" content="162">
+
+<title>CachyOS与niri配置 | 我的知识库</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/docs/linux/cachyos_niri/">
+<link rel="stylesheet" href="/book.min.4d6d5ad3b0ae85d2a15b20ab217863f70db543e46314629e239ced759e674898.css" integrity="sha256-TW1a07CuhdKhWyCrIXhj9w21Q&#43;RjFGKeI5ztdZ5nSJg=" crossorigin="anonymous">
+
+
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.b212e8bb22ec0bc78c674f0b4b79cb7a4a456ef47132e5da273a3c6d20dae289.js" integrity="sha256-shLouyLsC8eMZ08LS3nLekpFbvRxMuXaJzo8bSDa4ok=" crossorigin="anonymous"></script>
+
+
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-docs">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>我的知识库</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input id="book-search-input" type="text" 
+    placeholder="Search"
+    aria-label="Search"
+    maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/" class="">
+      xv6</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-0/" class="">
+      CHAPTER 0</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/lab-1-utilities/" class="">
+      Lab 1 Utilities</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-1/" class="">
+      CHAPTER 1</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/linux/" class="">
+      linux</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/linux/cachyos_niri/" class="active">
+      CachyOS与niri配置</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>CachyOS与niri配置</h3>
+
+  <label for="toc-control">
+    
+    <img src="/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#字体替换">字体替换</a></li>
+    <li><a href="#增加archlinuxcn源">增加archlinuxcn源</a></li>
+    <li><a href="#安装clash">安装clash</a></li>
+    <li><a href="#配置中文输入法">配置中文输入法</a></li>
+    <li><a href="#niri配置文件">niri配置文件</a></li>
+    <li><a href="#补全nautilus功能">补全nautilus功能</a></li>
+    <li><a href="#将系统文件名替换为英文">将系统文件名替换为英文</a></li>
+    <li><a href="#配置代理">配置代理</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h2 id="字体替换">字体替换<a class="anchor" href="#%e5%ad%97%e4%bd%93%e6%9b%bf%e6%8d%a2">#</a></h2>
+<p>因为默认英文字体好像不是等宽，导致终端巨巨巨丑，所以当务之急先配个英文字体再说</p>
+<p>安装JetBrains Moni</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">sudo</span> <span style="color:#a6e22e">pacman</span> <span style="color:#a6e22e">-S</span> ttf-jetbrains-mono
+</span></span><span style="display:flex;"><span>fc-list <span style="color:#f92672">|</span> <span style="color:#a6e22e">grep</span> <span style="color:#e6db74">&#34;JetBrains Mono&#34;</span> <span style="color:#75715e">#这里是确认是否安装成功
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mkdir</span> <span style="color:#a6e22e">-p</span> ~/.config/fontconfig/
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">micro</span> ~/.config/fontconfig/fonts.conf</span></span></code></pre></div><p>我这里用的终端编辑器是micro，比较符合现代使用习惯</p>
+<p>然后在该文件夹中写入配置</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34;?&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!DOCTYPE fontconfig SYSTEM &#34;fonts.dtd&#34;&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;fontconfig&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;match</span> <span style="color:#a6e22e">target=</span><span style="color:#e6db74">&#34;pattern&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;test</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;family&#34;</span> <span style="color:#a6e22e">qual=</span><span style="color:#e6db74">&#34;any&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;string&gt;</span>monospace<span style="color:#f92672">&lt;/string&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/test&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 第一位：JetBrains Mono --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;edit</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;family&#34;</span> <span style="color:#a6e22e">mode=</span><span style="color:#e6db74">&#34;prepend&#34;</span> <span style="color:#a6e22e">binding=</span><span style="color:#e6db74">&#34;strong&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;string&gt;</span>JetBrains Mono<span style="color:#f92672">&lt;/string&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/edit&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 最后一位：文楷等宽 Nerd Font（作为中文回退） --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;edit</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;family&#34;</span> <span style="color:#a6e22e">mode=</span><span style="color:#e6db74">&#34;append&#34;</span> <span style="color:#a6e22e">binding=</span><span style="color:#e6db74">&#34;strong&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;string&gt;</span>LXGWWenKaiMono Nerd Font<span style="color:#f92672">&lt;/string&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/edit&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/match&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/fontconfig&gt;</span></span></span></code></pre></div><p>可以先暂时把霞鹜文楷的部分去掉，也可以先执行下面这个安装一下霞鹜文楷</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">paru</span> <span style="color:#a6e22e">-S</span> ttf-lxgw-wenkai ttf-lxgw-wenkai-mono-nerd</span></span></code></pre></div><h2 id="增加archlinuxcn源">增加archlinuxcn源<a class="anchor" href="#%e5%a2%9e%e5%8a%a0archlinuxcn%e6%ba%90">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">micro</span> /etc/pacman.conf</span></span></code></pre></div><p>在文件的末尾增加</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span>[archlinuxcn]
+</span></span><span style="display:flex;"><span>Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch</span></span></code></pre></div><p>也可以增加自己喜欢的源</p>
+<h2 id="安装clash">安装clash<a class="anchor" href="#%e5%ae%89%e8%a3%85clash">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">sudo</span> <span style="color:#a6e22e">paru</span> <span style="color:#a6e22e">-S</span> clash-verge-rev-bin</span></span></code></pre></div><p>关机前记得关clash，否则有概率在开机后网络无法使用</p>
+<h2 id="配置中文输入法">配置中文输入法<a class="anchor" href="#%e9%85%8d%e7%bd%ae%e4%b8%ad%e6%96%87%e8%be%93%e5%85%a5%e6%b3%95">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">sudo</span> <span style="color:#a6e22e">pacman</span> <span style="color:#a6e22e">-S</span> fcitx5-im fcitx5-rime rime-ice-pinyin-git
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mkdir</span> <span style="color:#a6e22e">-p</span> ~/.local/share/fcitx5/rime
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">micro</span> ~/.local/share/fcitx5/rime/default.custom.yaml</span></span></code></pre></div><p>在用户配置文件中写入</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">patch</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">__include</span>: <span style="color:#ae81ff">rime_ice_suggestion:/</span></span></span></code></pre></div><p>在niri配置文件的环境变量部分写入</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span>environment{
+</span></span><span style="display:flex;"><span>	LC_MESSAGES &#34;zh_CN.UTF-8&#34;
+</span></span><span style="display:flex;"><span>	XMODIFIERS &#34;@im=fcitx&#34;
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p>然后后台启动fictx5</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">fcitx5</span> <span style="color:#a6e22e">-d</span></span></span></code></pre></div><p>打开fcitx5配置，添加中州韵，可以顺手把英文键盘删掉，有概率出bug，在终端中使用ctrl+L清屏，等待一会儿之后就可以使用雾凇输入法了</p>
+<h2 id="niri配置文件">niri配置文件<a class="anchor" href="#niri%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span>~/.config/niri/cgf/</span></span></code></pre></div><h2 id="补全nautilus功能">补全nautilus功能<a class="anchor" href="#%e8%a1%a5%e5%85%a8nautilus%e5%8a%9f%e8%83%bd">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#a6e22e">sudo</span> <span style="color:#a6e22e">pacman</span> <span style="color:#a6e22e">-S</span> nautilus-open-any-terminal gst-plugins-base gst-plugins-good gst-libav
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">gsettings</span> set com.github.stunkymonkey.nautilus-open-any-terminal terminal alacritty</span></span></code></pre></div><h2 id="将系统文件名替换为英文">将系统文件名替换为英文<a class="anchor" href="#%e5%b0%86%e7%b3%bb%e7%bb%9f%e6%96%87%e4%bb%b6%e5%90%8d%e6%9b%bf%e6%8d%a2%e4%b8%ba%e8%8b%b1%e6%96%87">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span>LC_ALL<span style="color:#f92672">=</span>C.UTF-<span style="color:#ae81ff">8</span> <span style="color:#a6e22e">xdg-user-dirs-update</span> <span style="color:#a6e22e">--force</span></span></span></code></pre></div><h2 id="配置代理">配置代理<a class="anchor" href="#%e9%85%8d%e7%bd%ae%e4%bb%a3%e7%90%86">#</a></h2>
+<ol>
+<li>临时代理</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#75715e"># HTTP/HTTPS 代理
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">export</span> http_proxy<span style="color:#f92672">=</span>http://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">export</span> https_proxy<span style="color:#f92672">=</span>http://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果还需要 SOCKS5 代理
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">export</span> all_proxy<span style="color:#f92672">=</span>socks5://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span></span></span></code></pre></div><ol start="2">
+<li>创建代理开启指令
+在<code>~/.config/fish/functions/proxy_on.fish</code>输入</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">proxy_on</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-gx</span> http_proxy http://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-gx</span> https_proxy http://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-gx</span> all_proxy socks5://<span style="color:#ae81ff">127</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">7897</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;代理已开启&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span></span></span></code></pre></div><p>在<code>~/.config/fish/functions/proxy_off.fish</code>输入</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fish" data-lang="fish"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">proxy_off</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-e</span> http_proxy
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-e</span> https_proxy
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">-e</span> all_proxy
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;代理已关闭&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span></span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/docs/linux/" class="flex align-center">
+        <img src="/icons/backward.svg" class="book-icon" alt="Backward" />
+        <span>linux</span>
+      </a>
+    
+    </span>
+    <span>
+    
+    </span>
+  </div>
+  
+
+
+ 
+        
+  
+ 
+        
+        
+  
+ 
+        
+  
+  
+    <script>(function(){document.querySelectorAll("pre:has(code)").forEach(e=>{e.addEventListener("click",e.focus),e.addEventListener("copy",function(t){if(t.preventDefault(),navigator.clipboard){const t=window.getSelection().toString()||e.textContent;navigator.clipboard.writeText(t)}})})})()</script>
+  
+
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+  
+  <aside class="book-toc">
+    <div class="book-toc-content">
+      
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#字体替换">字体替换</a></li>
+    <li><a href="#增加archlinuxcn源">增加archlinuxcn源</a></li>
+    <li><a href="#安装clash">安装clash</a></li>
+    <li><a href="#配置中文输入法">配置中文输入法</a></li>
+    <li><a href="#niri配置文件">niri配置文件</a></li>
+    <li><a href="#补全nautilus功能">补全nautilus功能</a></li>
+    <li><a href="#将系统文件名替换为英文">将系统文件名替换为英文</a></li>
+    <li><a href="#配置代理">配置代理</a></li>
+  </ul>
+</nav>
+
+
+
+    </div>
+  </aside>
+  
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
