@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="操作系统接口# 内核是向其他运行中程序提供服务的特殊程序
+内核拥有实现保护机制的硬件权限
+⭐在user/user.h中可以看到全部的系统调用函数，之后所有的实验实现全部基于这20个函数 进程和内存# 用户内存空间（指令、数据、栈）；仅对内核课件的进程状态
+进程通过fork创建子进程，fork在父进程和子进程中一次调用两次返回
+对于父进程返回子进程的pid,对于子进程返回0
+int pid; pid = fork(); if(pid &gt; 0){ printf(&#34;parent: child=%d\n&#34;, pid); pid = wait(); printf(&#34;child %d is done\n&#34;, pid); } else if(pid == 0){ printf(&#34;child: exiting\n&#34;); exit(); } else { printf(&#34;fork error\n&#34;); }⚠️对于这个代码在执行后输出混乱，是因为子进程和父进程交替进程输出导致的，在后面管道部分可以进行修复
+exit会结束调用它的进程，并释放占用的资源
+exec从文件中读取内存镜像，并将其替换到调用它的进程的内存空间
+ℹ️使用fork创建子进程后，将子进程替换为目标进程，常见于shell开发中
+char *argv[3]; argv[0] = &#34;echo&#34;; argv[1] = &#34;hello&#34;; argv[2] = 0; exec(&#34;/bin/echo&#34;, argv); printf(&#34;exec error\n&#34;);该段代码将调用从程序替换为echo
+I/O和文件描述符# 文件描述符是一个整数，它代表了一个进程可以读写的被内核管理的对象。
+FD序号 含义 0 标准输入：键盘 1 标准输出：屏幕 2 标准错误：屏幕 read(fd, buf, n) 从 fd 读最多 n 个字节（fd 可能没有 n 个字节），将它们拷贝到 buf 中，然后返回读出的字节数。当没有数据可读时，read 就会返回0
+⚠️每一个指向文件的文件描述符都和一个偏移关联。read 从当前文件偏移处读取数据，然后把偏移增加读出字节数。紧随其后的 read 会从新的起点开始读数据。
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2e3440">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://jadeble.github.io/docs/xv6/chapter-0/">
+  <meta property="og:site_name" content="我的知识库">
+  <meta property="og:title" content="CHAPTER 0">
+  <meta property="og:description" content="操作系统接口# 内核是向其他运行中程序提供服务的特殊程序
+内核拥有实现保护机制的硬件权限
+⭐在user/user.h中可以看到全部的系统调用函数，之后所有的实验实现全部基于这20个函数 进程和内存# 用户内存空间（指令、数据、栈）；仅对内核课件的进程状态
+进程通过fork创建子进程，fork在父进程和子进程中一次调用两次返回
+对于父进程返回子进程的pid,对于子进程返回0
+int pid; pid = fork(); if(pid &gt; 0){ printf(&#34;parent: child=%d\n&#34;, pid); pid = wait(); printf(&#34;child %d is done\n&#34;, pid); } else if(pid == 0){ printf(&#34;child: exiting\n&#34;); exit(); } else { printf(&#34;fork error\n&#34;); }⚠️对于这个代码在执行后输出混乱，是因为子进程和父进程交替进程输出导致的，在后面管道部分可以进行修复
+exit会结束调用它的进程，并释放占用的资源
+exec从文件中读取内存镜像，并将其替换到调用它的进程的内存空间
+ℹ️使用fork创建子进程后，将子进程替换为目标进程，常见于shell开发中
+char *argv[3]; argv[0] = &#34;echo&#34;; argv[1] = &#34;hello&#34;; argv[2] = 0; exec(&#34;/bin/echo&#34;, argv); printf(&#34;exec error\n&#34;);该段代码将调用从程序替换为echo
+I/O和文件描述符# 文件描述符是一个整数，它代表了一个进程可以读写的被内核管理的对象。
+FD序号 含义 0 标准输入：键盘 1 标准输出：屏幕 2 标准错误：屏幕 read(fd, buf, n) 从 fd 读最多 n 个字节（fd 可能没有 n 个字节），将它们拷贝到 buf 中，然后返回读出的字节数。当没有数据可读时，read 就会返回0
+⚠️每一个指向文件的文件描述符都和一个偏移关联。read 从当前文件偏移处读取数据，然后把偏移增加读出字节数。紧随其后的 read 会从新的起点开始读数据。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+    <meta property="article:published_time" content="2026-04-16T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-04-16T00:00:00+00:00">
+
+
+  <meta itemprop="name" content="CHAPTER 0">
+  <meta itemprop="description" content="操作系统接口# 内核是向其他运行中程序提供服务的特殊程序
+内核拥有实现保护机制的硬件权限
+⭐在user/user.h中可以看到全部的系统调用函数，之后所有的实验实现全部基于这20个函数 进程和内存# 用户内存空间（指令、数据、栈）；仅对内核课件的进程状态
+进程通过fork创建子进程，fork在父进程和子进程中一次调用两次返回
+对于父进程返回子进程的pid,对于子进程返回0
+int pid; pid = fork(); if(pid &gt; 0){ printf(&#34;parent: child=%d\n&#34;, pid); pid = wait(); printf(&#34;child %d is done\n&#34;, pid); } else if(pid == 0){ printf(&#34;child: exiting\n&#34;); exit(); } else { printf(&#34;fork error\n&#34;); }⚠️对于这个代码在执行后输出混乱，是因为子进程和父进程交替进程输出导致的，在后面管道部分可以进行修复
+exit会结束调用它的进程，并释放占用的资源
+exec从文件中读取内存镜像，并将其替换到调用它的进程的内存空间
+ℹ️使用fork创建子进程后，将子进程替换为目标进程，常见于shell开发中
+char *argv[3]; argv[0] = &#34;echo&#34;; argv[1] = &#34;hello&#34;; argv[2] = 0; exec(&#34;/bin/echo&#34;, argv); printf(&#34;exec error\n&#34;);该段代码将调用从程序替换为echo
+I/O和文件描述符# 文件描述符是一个整数，它代表了一个进程可以读写的被内核管理的对象。
+FD序号 含义 0 标准输入：键盘 1 标准输出：屏幕 2 标准错误：屏幕 read(fd, buf, n) 从 fd 读最多 n 个字节（fd 可能没有 n 个字节），将它们拷贝到 buf 中，然后返回读出的字节数。当没有数据可读时，read 就会返回0
+⚠️每一个指向文件的文件描述符都和一个偏移关联。read 从当前文件偏移处读取数据，然后把偏移增加读出字节数。紧随其后的 read 会从新的起点开始读数据。">
+  <meta itemprop="datePublished" content="2026-04-16T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2026-04-16T00:00:00+00:00">
+  <meta itemprop="wordCount" content="613">
+
+<title>CHAPTER 0 | 我的知识库</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="https://jadeble.github.io/docs/xv6/chapter-0/">
+<link rel="stylesheet" href="/book.min.4d6d5ad3b0ae85d2a15b20ab217863f70db543e46314629e239ced759e674898.css" integrity="sha256-TW1a07CuhdKhWyCrIXhj9w21Q&#43;RjFGKeI5ztdZ5nSJg=" crossorigin="anonymous">
+
+
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.23d5b0441002045fa249c430c5786d4fe611286532959a7b19dc6c73209181cd.js" integrity="sha256-I9WwRBACBF&#43;iScQwxXhtT&#43;YRKGUylZp7GdxscyCRgc0=" crossorigin="anonymous"></script>
+
+
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-docs">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>我的知识库</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input id="book-search-input" type="text" 
+    placeholder="Search"
+    aria-label="Search"
+    maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a>
+      xv6</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-0/" class="active">
+      CHAPTER 0</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/lab-1-utilities/" class="">
+      Lab 1 Utilities</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/xv6/chapter-1/" class="">
+      CHAPTER 1</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a>
+      linux</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>CHAPTER 0</h3>
+
+  <label for="toc-control">
+    
+  </label>
+</div>
+
+
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="操作系统接口">操作系统接口<a class="anchor" href="#%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e6%8e%a5%e5%8f%a3">#</a></h1>
+<p><img src="/image/1.png" alt="操作系统" /></p>
+<p>内核是向其他运行中程序提供服务的特殊程序</p>
+<p>内核拥有实现保护机制的硬件权限</p>
+<p>⭐在user/user.h中可以看到全部的系统调用函数，之后所有的实验实现全部基于这20个函数
+<img src="/image/2.png" alt="系统调用" /></p>
+<h1 id="进程和内存">进程和内存<a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e5%92%8c%e5%86%85%e5%ad%98">#</a></h1>
+<p>用户内存空间（指令、数据、栈）；仅对内核课件的进程状态</p>
+<p>进程通过<code>fork</code>创建子进程，<code>fork</code>在父进程和子进程中一次调用两次返回</p>
+<p>对于父进程返回子进程的<code>pid</code>,对于子进程返回0</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> pid;
+</span></span><span style="display:flex;"><span>pid <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(pid <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;parent: child=%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pid);
+</span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> <span style="color:#a6e22e">wait</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;child %d is done</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pid);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span>(pid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;child: exiting</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>();
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;fork error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p>⚠️对于这个代码在执行后输出混乱，是因为子进程和父进程交替进程输出导致的，在后面管道部分可以进行修复</p>
+<p><code>exit</code>会结束调用它的进程，并释放占用的资源</p>
+<p><code>exec</code>从文件中读取内存镜像，并将其替换到调用它的进程的内存空间</p>
+<p>ℹ️使用<code>fork</code>创建子进程后，将子进程替换为目标进程，常见于<code>shell</code>开发中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[<span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;echo&#34;</span>;
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello&#34;</span>;
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">exec</span>(<span style="color:#e6db74">&#34;/bin/echo&#34;</span>, argv);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;exec error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);</span></span></code></pre></div><p>该段代码将调用从程序替换为<code>echo</code></p>
+<h1 id="io和文件描述符">I/O和文件描述符<a class="anchor" href="#io%e5%92%8c%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6">#</a></h1>
+<p><strong>文件描述符</strong>是一个整数，它代表了一个进程可以读写的被内核管理的对象。</p>
+<table>
+  <thead>
+      <tr>
+          <th>FD序号</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0</td>
+          <td>标准输入：键盘</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>标准输出：屏幕</td>
+      </tr>
+      <tr>
+          <td>2</td>
+          <td>标准错误：屏幕</td>
+      </tr>
+  </tbody>
+</table>
+<p><code>read(fd, buf, n)</code> 从 <code>fd</code> 读最多 n 个字节（<code>fd</code> 可能没有 n 个字节），将它们拷贝到 <code>buf</code> 中，然后返回读出的字节数。当没有数据可读时，<code>read</code> 就会返回0</p>
+<p>⚠️每一个指向文件的文件描述符都和一个偏移关联。<code>read</code> 从当前文件偏移处读取数据，然后把偏移增加读出字节数。紧随其后的 <code>read</code> 会从新的起点开始读数据。</p>
+<p>💡 <code>read</code> 可以记录该文件上次读取的位置</p>
+<p>💡 参数n可以大于文件长度</p>
+<p><code>write</code>与<code>read</code>特性相同</p>
+<p><code>cat</code>的实现本质</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">512</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> n;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(;;){
+</span></span><span style="display:flex;"><span>    n <span style="color:#f92672">=</span> <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, buf, <span style="color:#66d9ef">sizeof</span> buf);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(n <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fprintf</span>(<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;read error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exit</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">write</span>(<span style="color:#ae81ff">1</span>, buf, n) <span style="color:#f92672">!=</span> n){
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fprintf</span>(<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;write error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exit</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p>系统调用 <code>close</code> 会释放一个文件描述符，使得它未来可以被 <code>open</code>, <code>pipe</code>, <code>dup</code> 等调用重用。</p>
+<p>⚠️一个新分配的文件描述符永远都是当前进程的最小的未被使用的文件描述符。</p>
+<p>🤓文件描述符和 <code>fork</code> 的交叉使用使得 I/O 重定向能够轻易实现。<code>fork</code> 会复制父进程的文件描述符和内存，所以子进程和父进程的文件描述符一模一样。<code>exec</code> 会替换调用它的进程的内存但是会保留它的文件描述符表。</p>
+<p>💡 <code>fork</code> 一个进程，重新打开指定文件的文件描述符，然后执行新的程序。</p>
+<p>简化版的 shell 执行 <code>cat&lt;input.txt</code> 的代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;cat&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### argv[1] = 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">fork</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>, O_RDONLY);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exec</span>(<span style="color:#e6db74">&#34;cat&#34;</span>, argv);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p>程序实现流程详解</p>
+<blockquote class='book-hint '>
+<p><strong><code>if(fork() == 0) { ... }</code></strong>
+<strong>动作</strong>：Shell 调用 <code>fork()</code>。此时系统克隆了一个和父进程一模一样的子进程。
+<strong>状态</strong>：子进程的 FD 表里，0 依然指向键盘，1 指向屏幕。</p>
+</blockquote><blockquote class='book-hint '>
+<p><strong><code>close(0);</code></strong>
+<strong>动作</strong>：子进程主动关闭了它的“标准输入”。
+<strong>状态</strong>：此时，子进程的 FD 表中，<strong>0 位置空出来了</strong>，它是当前最小的可用编号。</p>
+</blockquote><blockquote class='book-hint '>
+<p><strong><code>open(&quot;input.txt&quot;, O_RDONLY);</code></strong>
+<strong>动作</strong>：子进程打开 <code>input.txt</code>。
+<strong>关键点</strong>：根据“最小可用”规则，操作系统发现 0 是空的，于是<strong>把 <code>input.txt</code> 分配给了 FD 0</strong>。
+<strong>状态</strong>：现在子进程以为它的“标准输入”就是这个文件。<strong>这就是重定向发生的瞬间！</strong></p>
+</blockquote><blockquote class='book-hint '>
+<p><strong><code>exec(&quot;cat&quot;, argv);</code></strong>
+<strong>动作</strong>：子进程把自己的“灵魂”换成了 cat 程序。
+<strong>关键点</strong>：exec 不会重置 FD 表。
+<strong>结果</strong>：cat 启动后，它的本职工作是从 <strong>FD 0</strong> 读取数据。它并不知道 FD 0 已经被换成了 <code>input.txt</code>，它依然像往常一样从 0 号位读数据。
+<strong>现象</strong>：cat 读出的就是文件的内容，而不是键盘输入。</p>
+</blockquote><p>⚠️ <code>fork</code>创建进程复制文件描述符，每个文件的偏移值在父子进程之间共享</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">fork</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">write</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;hello &#34;</span>, <span style="color:#ae81ff">6</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>();
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wait</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">write</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">6</span>);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p><code>dup</code> 复制一个已有的文件描述符，返回一个指向同一个输入/输出对象的新描述符。这两个描述符共享一个文件偏移。正如被 <code>fork</code> 复制的文件描述符类似，只是并不会创建子进程。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>fd <span style="color:#f92672">=</span> <span style="color:#a6e22e">dup</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">write</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#ae81ff">6</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">write</span>(fd, <span style="color:#e6db74">&#34;world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">6</span>);</span></span></code></pre></div><p>💡两次<code>write</code> 的文件描述符不同，但是操作的是同一个文件</p>
+<p>指令实现<code>ls existing-file non-exsiting-file &gt; tmp1 2&gt;&amp;1</code></p>
+<p>ℹ️ 解释：<code>existing-file</code> 的名字和 <code>non-exsiting-file</code> 的错误输出都将出现在 <code>tmp1</code> 中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// 假设是在 fork() 产生的子进程中
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">fork</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1. 先处理 &#34;&gt; tmp1&#34; (重定向标准输出)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(<span style="color:#ae81ff">1</span>);               <span style="color:#75715e">// 关闭当前标准输出（通常是屏幕）
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;tmp1&#34;</span>, O_WRONLY<span style="color:#f92672">|</span>O_CREATE<span style="color:#f92672">|</span>O_TRUNC); <span style="color:#75715e">// 此时 FD 1 指向了 tmp1
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2. 再处理 &#34;2&gt;&amp;1&#34; (重定向标准错误到标准输出)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(<span style="color:#ae81ff">2</span>);               <span style="color:#75715e">// 关闭当前标准错误
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dup</span>(<span style="color:#ae81ff">1</span>);                 <span style="color:#75715e">// 复制 FD 1。因为 2 是当前最小可用 FD，所以 FD 2 现在也指向 tmp1
+</span></span></span><span style="display:flex;"><span>                            <span style="color:#75715e">// 并且 FD 2 和 FD 1 共享文件偏移量！
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 3. 执行程序
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;ls&#34;</span>, <span style="color:#e6db74">&#34;existing-file&#34;</span>, <span style="color:#e6db74">&#34;non-existing-file&#34;</span>, <span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exec</span>(<span style="color:#e6db74">&#34;ls&#34;</span>, argv);
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h1 id="管道">管道<a class="anchor" href="#%e7%ae%a1%e9%81%93">#</a></h1>
+<p>管道是一个小的内核缓冲区，它以文件描述符对的形式提供给进程</p>
+<p>对于管道<code>p</code>，<code>p[0]</code>用于读取管道内容(也可以理解为管道向外输出)<code>p[1]</code>用于向管道内填入内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> p[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;wc&#34;</span>;
+</span></span><span style="display:flex;"><span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">pipe</span>(p);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">fork</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(<span style="color:#ae81ff">0</span>);    <span style="color:#75715e">// 关掉键盘输入
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dup</span>(p[<span style="color:#ae81ff">0</span>]);   <span style="color:#75715e">// 把管子的读端复制到 0 号位置
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(p[<span style="color:#ae81ff">0</span>]); <span style="color:#75715e">// 原始的 p[0] 没用了，关掉
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(p[<span style="color:#ae81ff">1</span>]); <span style="color:#75715e">// ！！！重点：关掉子进程里的写端
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exec</span>(<span style="color:#e6db74">&#34;/bin/wc&#34;</span>, argv);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">write</span>(p[<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;hello world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">12</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(p[<span style="color:#ae81ff">0</span>]); <span style="color:#75715e">// 父进程不读，关掉
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(p[<span style="color:#ae81ff">1</span>]); <span style="color:#75715e">// 发完数据了，关掉写端
+</span></span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p>💡解析：</p>
+<blockquote class='book-hint '>
+<p>子进程中，先关闭标准输入0，然后将FD 0连接到<code>p[0]</code>，此时子进程的输入变为读取管道
+然后依次关闭子进程中的<strong>管道读</strong>和<strong>管道写</strong></p>
+</blockquote><p>⚠️ 使用<code>fork</code>之后，系统中共有四个描述符向这根管子（父读、父写、子读、子写）。</p>
+<p>❓ 为什么要关闭子进程的管道读<code>p[0]</code>？</p>
+<p>💡 <strong>管道是引用计数的</strong> 只要系统中还有一个进程的某个 FD 指向该管道，该管道就不会消失。前一步操作中，将原本的管道读使用<code>dup</code>复制到了<code>FD 0</code>，此时可以释放原本的管道读。不释放应该也没关系，只是可能不安全。</p>
+<p>🔑 及时关闭冗余 FD 是为了防止<strong>文件描述符泄漏</strong>（每个进程的 FD 数量有限制），同时也是为了保持进程状态的整洁，避免误操作。</p>
+<p>❓ 为什么要关闭子进程的管道写<code>p[1]</code>？</p>
+<p>💡 此处涉及到read读管道时，什么时候返回 <strong><code>EOF</code></strong> 。当管道<strong>无数据</strong>且<strong>无管道写</strong>时，read会返回 <strong><code>EOF</code></strong> 。只要系统中还有一个进程的某个 FD 指向该管道的写端，内核就不会向读端发送 <code>EOF</code>。此时若不关闭子进程中的管道写，那么当父进程关闭管道写时，由于子进程本身还有一个管道写，read无法返回 <strong><code>EOF</code></strong>，导致<code>wc</code>无法结束循环。</p>
+<blockquote class='book-hint '>
+<p>父进程中，使用管道写，向管道中加入数据，然后关闭管道读和管道写，确保read可以返回。</p>
+</blockquote><p>🔥 使用read在读管道时的特性，我们可以对前面的<a href="#%e8%bf%9b%e7%a8%8b%e5%92%8c%e5%86%85%e5%ad%98">进程和内存</a>部分的代码进行修正：</p>
+<blockquote class='book-hint '>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> pid;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> p[<span style="color:#ae81ff">2</span>]; <span style="color:#75715e">// 管道文件描述符
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">pipe</span>(p) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;pipe error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>pid <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(pid <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 父进程
+</span></span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;parent: child=%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pid);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 打印完了，往管道写一个字节，通知子进程
+</span></span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">write</span>(p[<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;x&#34;</span>, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>	pid <span style="color:#f92672">=</span> <span style="color:#a6e22e">wait</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;child %d is done</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pid);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span>(pid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 子进程
+</span></span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">char</span> buf;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 阻塞在这里，直到从管道读到一个字节
+</span></span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">read</span>(p[<span style="color:#ae81ff">0</span>], <span style="color:#f92672">&amp;</span>buf, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;child: exiting</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;fork error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);</span></span></code></pre></div></blockquote><p>在父进程中创建管道，使用fork产生子进程后，管道将父子进程联通。当子进程执行到read时，由于管道内没有数据，read会暂时阻塞程序进行，当管道中出现数据后，read会返回读到的数据数量，然后就可以执行后续的操作</p>
+<p>⚠️ read并不一定要满足n个数据，而是有数据就会返回</p>
+<p>❓ 程序如何判断子进程还是父进程？为什么看似一份代码两者执行的不一样？</p>
+<p>ℹ️ 子进程在fork处产生，子进程和父进程都会执行这一份代码。在父进程视角，fork返回了子进程的<code>pid</code>，因此不满足条件，进入else块；在子进程视角，fork返回0，满足条件，进入if块。子进程在最后使用exec替换了内存中的数据，因此不会进入属于父进程的else中。</p>
+<h1 id="文件系统">文件系统<a class="anchor" href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f">#</a></h1>
+<p><code>xv6</code> 文件系统提供文件和目录，文件就是一个简单的字节数组，而目录包含指向文件和其他目录的引用。</p>
+<p>👑 这个简单，不就是<code>cd</code>嘛</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">chdir</span>(<span style="color:#e6db74">&#34;/a&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">chdir</span>(<span style="color:#e6db74">&#34;b&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;c&#34;</span>, O_RDONLY);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;/a/b/c&#34;</span>, O_RDONLY);</span></span></code></pre></div><p>🔑 三种调用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">mkdir</span>(<span style="color:#e6db74">&#34;/dir&#34;</span>);
+</span></span><span style="display:flex;"><span>fd <span style="color:#f92672">=</span> <span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;/dir/file&#34;</span>, O_CREATE<span style="color:#f92672">|</span>O_WRONGLY);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">close</span>(fd);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mknod</span>(<span style="color:#e6db74">&#34;/console&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>);</span></span></code></pre></div><p><code>unix</code>中一切皆文件，<code>mknod</code>创建的就是设备文件，其中两个数据依次代表主设备号和辅设备号，理解为：类别和序号。当需要打开这类文件时，内核将读写转移到内核设备上实现。</p>
+<p><code>fstat</code>返回文件信息结构体</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define T_DIR  1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define T_FILE 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define T_DEV  3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Directory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// File
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Device
+</span></span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">struct</span> stat {
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">short</span> type;  <span style="color:#75715e">// Type of file
+</span></span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">int</span> dev;     <span style="color:#75715e">// File system’s disk device
+</span></span></span><span style="display:flex;"><span>       uint ino;    <span style="color:#75715e">// Inode number
+</span></span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">short</span> nlink; <span style="color:#75715e">// Number of links to file
+</span></span></span><span style="display:flex;"><span>       uint size;   <span style="color:#75715e">// Size of file in bytes
+</span></span></span><span style="display:flex;"><span>};</span></span></code></pre></div><p>同一个文件<code>inode</code>可以有多个名字，类似<code>软连接</code>，不同名字对应同一个文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;a&#34;</span>, O_CREATE<span style="color:#f92672">|</span>O_WRONGLY);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">link</span>(<span style="color:#e6db74">&#34;a&#34;</span>, <span style="color:#e6db74">&#34;b&#34;</span>);</span></span></code></pre></div><p>系统调用 <code>unlink</code> 从文件系统移除一个文件名。一个文件的 <code>inode</code> 和磁盘空间只有当它的链接数变为 0 的时候才会被清空，也就是没有一个文件再指向它。</p>
+<p>⚠️ <strong>核心区分：全局状态 vs 私有状态</strong></p>
+<ol>
+<li>
+<p><strong>全局持久化状态 (Global Persistent State)</strong></p>
+<ul>
+<li>
+<p><strong>范畴</strong>：磁盘上的目录结构、文件内容。</p>
+</li>
+<li>
+<p><strong>代表指令</strong>：mkdir, rm, open(O_CREATE), write。</p>
+</li>
+<li>
+<p><strong>本质</strong>：操作的是<strong>内核维护的全局资源（磁盘/文件系统）</strong>。</p>
+</li>
+<li>
+<p><strong>表现</strong>：子进程操作，全系统生效。就像在公共黑板上写字，谁写大家都能看到。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>进程私有状态 (Per-process Private State)</strong></p>
+<ul>
+<li>
+<p><strong>范畴</strong>：当前工作目录 (CWD)、进程内存（变量）、文件描述符表。</p>
+</li>
+<li>
+<p><strong>代表指令</strong>：cd, x = 1 (赋值), close。</p>
+</li>
+<li>
+<p><strong>本质</strong>：操作的是<strong>进程控制块 (PCB) 或用户空间内存</strong>。</p>
+</li>
+<li>
+<p><strong>表现</strong>：子进程操作，父进程无感。就像子进程在自己的笔记本上改了笔记，父进程的笔记本不会变。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>临时共享状态 (Transient Shared State)</strong></p>
+<ul>
+<li>
+<p><strong>范畴</strong>：管道 (Pipe)、共享的文件偏移。</p>
+</li>
+<li>
+<p><strong>本质</strong>：存在于内核 RAM 中的缓冲区或对象。</p>
+</li>
+<li>
+<p><strong>表现</strong>：仅在有“血缘关系”的父子进程间通过继承 FD 来共享，生命周期随进程结束而结束。</p>
+</li>
+</ul>
+</li>
+</ol>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+    </span>
+    <span>
+    
+      <a href="/docs/xv6/lab-1-utilities/" class="flex align-center">
+        <span>Lab 1 Utilities</span>
+        <img src="/icons/forward.svg" class="book-icon" alt="Forward" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+ 
+        
+  
+ 
+        
+        
+  
+ 
+        
+  
+  
+    <script>(function(){document.querySelectorAll("pre:has(code)").forEach(e=>{e.addEventListener("click",e.focus),e.addEventListener("copy",function(t){if(t.preventDefault(),navigator.clipboard){const t=window.getSelection().toString()||e.textContent;navigator.clipboard.writeText(t)}})})})()</script>
+  
+
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+  
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
