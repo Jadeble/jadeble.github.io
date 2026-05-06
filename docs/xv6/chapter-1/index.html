@@ -8,13 +8,18 @@ https://github.com/alex-shpak/hugo-book
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="xv6的存储#">
+<meta name="description" content="进程概念# 让一个程序假设它独占一台机器：进程向程序提供“看上去”私有的，其他程序无法访读写的内存系统（地址空间），以及一颗看上去只执行该程序的CPU。
+xv6使用页表为程序提供独有的地址空间，页表使用硬件实现，不同架构有不同的实现接口
+xv6为每个进程维护不同的页表，每一块地址空间包含了从虚拟地址0开始的用户内存，从下往上依次是进程指令、全局变量、栈区、用户可按需拓展的堆区（malloc）。
+">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2e3440">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="https://jadeble.github.io/docs/xv6/chapter-1/">
   <meta property="og:site_name" content="我的知识库">
   <meta property="og:title" content="CHAPTER 1">
-  <meta property="og:description" content="xv6的存储#">
+  <meta property="og:description" content="进程概念# 让一个程序假设它独占一台机器：进程向程序提供“看上去”私有的，其他程序无法访读写的内存系统（地址空间），以及一颗看上去只执行该程序的CPU。
+xv6使用页表为程序提供独有的地址空间，页表使用硬件实现，不同架构有不同的实现接口
+xv6为每个进程维护不同的页表，每一块地址空间包含了从虚拟地址0开始的用户内存，从下往上依次是进程指令、全局变量、栈区、用户可按需拓展的堆区（malloc）。">
   <meta property="og:locale" content="zh_cn">
   <meta property="og:type" content="article">
     <meta property="article:section" content="docs">
@@ -23,10 +28,12 @@ https://github.com/alex-shpak/hugo-book
 
 
   <meta itemprop="name" content="CHAPTER 1">
-  <meta itemprop="description" content="xv6的存储#">
+  <meta itemprop="description" content="进程概念# 让一个程序假设它独占一台机器：进程向程序提供“看上去”私有的，其他程序无法访读写的内存系统（地址空间），以及一颗看上去只执行该程序的CPU。
+xv6使用页表为程序提供独有的地址空间，页表使用硬件实现，不同架构有不同的实现接口
+xv6为每个进程维护不同的页表，每一块地址空间包含了从虚拟地址0开始的用户内存，从下往上依次是进程指令、全局变量、栈区、用户可按需拓展的堆区（malloc）。">
   <meta itemprop="datePublished" content="2026-05-04T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-04T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1">
+  <meta itemprop="wordCount" content="4">
 
 <title>CHAPTER 1 | 我的知识库</title>
 <link rel="icon" href="/favicon.png" >
@@ -36,7 +43,7 @@ https://github.com/alex-shpak/hugo-book
 
 
   <script defer src="/fuse.min.js"></script>
-  <script defer src="/en.search.min.46f62323ce2f3c3017e9902eb608aa78d2b5564ddb3d025ab7c4e31e67ddd45f.js" integrity="sha256-RvYjI84vPDAX6ZAutgiqeNK1Vk3bPQJat8TjHmfd1F8=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.f041091a065992966099d31400e41a6be0fc18a4ae6bee4fe04befed02868035.js" integrity="sha256-8EEJGgZZkpZgmdMUAOQaa&#43;D8GKSua&#43;5P4Evv7QKGgDU=" crossorigin="anonymous"></script>
 
 
 
@@ -190,6 +197,165 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/" class="">
+      新中特</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/1.%E4%B8%AD%E5%9B%BD%E5%BC%8F%E7%8E%B0%E4%BB%A3%E5%8C%96/" class="">
+      1.中国式现代化</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/2.%E7%A7%91%E5%AD%A6%E7%A4%BE%E4%BC%9A%E4%B8%BB%E4%B9%89/" class="">
+      2.科学社会主义</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/3.%E4%B8%AD%E5%9B%BD%E7%89%B9%E8%89%B2%E7%A4%BE%E4%BC%9A%E4%B8%BB%E4%B9%89/" class="">
+      3.中国特色社会主义</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/4.%E5%85%9A%E7%9A%84%E8%87%AA%E6%88%91%E9%9D%A9%E5%91%BD/" class="">
+      4.党的自我革命</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/5.%E5%85%B1%E5%90%8C%E5%AF%8C%E8%A3%95/" class="">
+      5.共同富裕</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/6.%E4%B9%A0%E8%BF%91%E5%B9%B3%E6%96%B0%E6%97%B6%E4%BB%A3%E4%B8%AD%E5%9B%BD%E7%89%B9%E8%89%B2%E7%A4%BE%E4%BC%9A%E4%B8%BB%E4%B9%89/" class="">
+      6.习近平新时代中国特色社会主义</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/7.%E5%85%A8%E8%BF%87%E7%A8%8B%E4%BA%BA%E6%B0%91%E6%B0%91%E4%B8%BB/" class="">
+      7.全过程人民民主</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/%E4%BE%8B%E9%A2%981/" class="">
+      例题1</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/%E4%BE%8B%E9%A2%982/" class="">
+      例题2</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%96%B0%E4%B8%AD%E7%89%B9/%E4%BE%8B%E9%A2%983/" class="">
+      例题3</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -229,32 +395,20 @@ https://github.com/alex-shpak/hugo-book
 
   <label for="toc-control">
     
-    <img src="/icons/toc.svg" class="book-icon" alt="Table of Contents" />
-    
   </label>
 </div>
 
 
-  
-  <aside class="hidden">
-    
-  
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#xv6的存储">xv6的存储</a></li>
-  </ul>
-</nav>
-
-
-
-  </aside>
   
  
       </header>
 
       
       
-  <article class="markdown book-article"><h2 id="xv6的存储">xv6的存储<a class="anchor" href="#xv6%e7%9a%84%e5%ad%98%e5%82%a8">#</a></h2>
+  <article class="markdown book-article"><h1 id="进程概念">进程概念<a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e6%a6%82%e5%bf%b5">#</a></h1>
+<p>让一个程序假设它独占一台机器：进程向程序提供“看上去”私有的，其他程序无法访读写的内存系统（地址空间），以及一颗看上去只执行该程序的CPU。</p>
+<p>xv6使用页表为程序提供独有的地址空间，页表使用硬件实现，不同架构有不同的实现接口</p>
+<p>xv6为每个进程维护不同的页表，每一块地址空间包含了从虚拟地址0开始的用户内存，从下往上依次是<code>进程指令</code>、<code>全局变量</code>、<code>栈区</code>、用户可按需拓展的<code>堆区</code>（malloc）。</p>
 </article>
  
       
@@ -321,21 +475,6 @@ https://github.com/alex-shpak/hugo-book
     </div>
 
     
-  
-  <aside class="book-toc">
-    <div class="book-toc-content">
-      
-  
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#xv6的存储">xv6的存储</a></li>
-  </ul>
-</nav>
-
-
-
-    </div>
-  </aside>
   
  
   </main>
