@@ -9,5 +9,7 @@ type: docs
 
 ### 主要章节
 
-- [Linux 笔记](/docs/linux/)
 - [Xv6 学习记录](/docs/xv6/)
+- [Linux 笔记](/docs/linux/)
+- [新中特考点](/docs/xv6/新中特)
+

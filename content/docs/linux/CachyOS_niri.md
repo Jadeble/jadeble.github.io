@@ -137,3 +137,102 @@ function proxy_off
     echo "代理已关闭"
 end
 ```
+
+# 疑难杂症1：登出问题
+描述：笔记本合盖后使用外接显示器，导致logout之后，电源管理指令被锁死，poweroff、reboot等指令无法使用，同时伴随重启不彻底，网络等功能无法使用
+
+解决方案：**告诉系统，只要插着电源/接外接显示器，就彻底无视那个笔记本盖子。**
+```bash
+sudo nano /etc/systemd/logind.conf
+```
+修改该文件中内容为如下状态：
+```toml
+[Login]
+HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+```
+重启即可解决
+
+# 剪切板可视化
+```bash
+sudo pacman -S cliphist rofi-wayland wl-clipboard
+```
+在niri配置文件的自启动部分添加
+```kdl
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+```
+在niri快捷键配置中设置快捷键
+```
+Mod+V { spawn "sh" "-c" "cliphist list | rofi -dmenu | cliphist decode | wl-copy"; }
+```
+重启或运行下面的指令即可生效
+```bash
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+```
+# 截图并可视化
+
+使用 grim + slurp + satty 方案
+```bash
+sudo pacman -S grim slurp satty libnotify
+```
+编写截图脚本
+```bash
+mkdir -p ~/.local/bin
+nano ~/.local/bin/niri-screenshot.fish
+```
+脚本中写入如下内容
+```fish
+#!/usr/bin/fish
+
+# 设置保存目录
+set SAVE_DIR "$HOME/Pictures/Screenshots"
+mkdir -p $SAVE_DIR
+
+# 生成时间戳文件名
+set FILE_NAME "Screenshot_$(date +'%Y-%m-%d_%H-%M-%S').png"
+set FULL_PATH "$SAVE_DIR/$FILE_NAME"
+
+# 1. 使用 slurp 选择区域
+set REGION (slurp)
+
+# 检查用户是否取消了选择 (按下 ESC)
+if test -z "$REGION"
+    exit 0
+end
+
+# 2. 截图并送入 satty 编辑
+# grim -g "$REGION" - | satty --filename - --save-after-copy --output-filename $FULL_PATH
+grim -g "$REGION" - | satty --filename - --output-filename $FULL_PATH
+
+if test -f $FULL_PATH
+    wl-copy --type image/png < $FULL_PATH
+end
+```
+赋予执行权限
+```bash
+chmod +x ~/.local/bin/niri-screenshot.fish
+```
+niri中配置快捷键
+```
+Mod+Shift+S { spawn "~/.local/bin/niri-screenshot.fish"; }
+```
+可以选择将截图后的窗口设置为浮动窗口，在niri的窗口规则中配置
+```kdl
+window-rule {
+    // 匹配 Satty
+    match app-id="com.gabm.satty"
+    
+    // 开启浮动模式
+    open-floating true
+    
+    // 如果你觉得 Satty 窗口太小，可以设置默认的浮动尺寸
+    default-floating-width { fixed 1000; }
+    default-floating-height { fixed 800; }
+
+    // 排除在布局之外（可选，通常 open-floating 已经包含此意）
+    exclude-from-layout true
+}
+```
