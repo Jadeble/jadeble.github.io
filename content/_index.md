@@ -11,5 +11,4 @@ type: docs
 
 - [Xv6 学习记录](/docs/xv6/)
 - [Linux 笔记](/docs/linux/)
-- [新中特考点](/docs/新中特/)
 
